@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мои уведомления | Dream Date</title>
+  <link rel="stylesheet" href="notifications.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Левая шторка -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img src="profile_photo.jpg" alt="Фото профиля">
+        </div>
+        <div class="profile-info">
+          <h3>Имя Фамилия</h3>
+          <p>Люблю смотреть фильмы, читаю книги.</p>
+          <a href="profile.html" class="btn">Профиль</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="finder.html" id="find-partner-link" class="find-partner-btn">Найти пару!</a></li>
+        <li><a href="messages.html">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки</a></li>
+        <li><a href="login.html">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content">
+      <h2>Мои уведомления</h2>
+      <div class="notifications">
+        <p>Загрузка уведомлений...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const email = localStorage.getItem("userEmail");
+async function loadUserSidebar() {
+    if (!email) return;
+
+    try {
+      const res = await fetch(`/api/user?email=${email}`);
+      if (!res.ok) throw new Error('Ошибка загрузки данных пользователя');
+
+      const user = await res.json();
+
+      document.querySelector('.user-profile img').src = user.photo;
+      document.querySelector('.user-profile h3').textContent = user.name;
+      document.querySelector('.user-profile p').textContent = user.bio;
+    } catch (err) {
+      console.error('Ошибка при загрузке данных в шторку:', err);
+    }
+  }
+
+  loadUserSidebar();
+    async function loadNotifications() {
+      const container = document.querySelector('.notifications');
+      container.innerHTML = '';
+
+      if (!email) {
+        container.innerHTML = '<p>Ошибка: email не найден. Войдите в систему заново.</p>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/notifications?email=${email}`);
+        if (!res.ok) {
+          container.innerHTML = '<p>Не удалось загрузить уведомления.</p>';
+          return;
+        }
+
+        const notifications = await res.json();
+
+        if (!notifications.length) {
+          container.innerHTML = '<p>Нет уведомлений!</p>';
+          return;
+        }
+
+        notifications.forEach(n => {
+          const notificationCard = document.createElement('div');
+          notificationCard.classList.add('notification-card');
+
+          // Проверка на наличие ID пользователя в сообщении
+          const userIdMatch = n.message.match(/\(ID:(\d+)\)/);
+          const userId = userIdMatch ? userIdMatch[1] : null;
+
+          const content = userId
+            ? `<a href="user_profile.html?id=${userId}">${n.message}</a>`
+            : `<p>${n.message}</p>`;
+
+          notificationCard.innerHTML = `
+            ${content}
+            <small>${new Date(n.timestamp).toLocaleString()}</small>
+          `;
+
+          container.appendChild(notificationCard);
+        });
+      } catch (err) {
+        console.error('Ошибка при загрузке уведомлений:', err);
+        container.innerHTML = '<p>Не удалось загрузить уведомления.</p>';
+      }
+    }
+
+    loadNotifications();
+  </script>
+</body>
+</html>

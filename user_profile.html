@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Профиль пользователя | Dream Date</title>
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Левая панель -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <ul>
+        <li><a href="messages.html">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки сайта</a></li>
+        <li><a href="login.html">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Контент -->
+    <div class="content">
+      <div class="profile-container">
+        <div class="profile-image">
+          <img id="user-photo" src="profile_photo.jpg" alt="Фото профиля" />
+        </div>
+
+        <h2 id="user-name">Имя пользователя</h2>
+        <p id="user-age">Возраст: —</p>
+        <p id="user-zodiac">Знак зодиака: —</p>
+        <p id="user-city">Город: —</p>
+
+        <div class="about-block">
+          <h3>О себе</h3>
+          <p id="user-bio">—</p>
+        </div>
+
+        <button id="sendMessageBtn">Написать сообщение</button>
+        <button id="likeBtn">Понравилось!</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get("id");
+    const email = localStorage.getItem('userEmail');
+    let viewedUser = null;
+
+    async function loadProfile() {
+      if (!userId) {
+        alert("Ошибка: ID пользователя не указан.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/users/${userId}`);
+        if (!res.ok) {
+          alert("Профиль не найден.");
+          return;
+        }
+
+        const user = await res.json();
+        viewedUser = user;
+
+        document.getElementById("user-name").textContent = user.name;
+
+        if (user.birthdate) {
+          const birthDate = new Date(user.birthdate);
+          const now = new Date();
+          let age = now.getFullYear() - birthDate.getFullYear();
+          const m = now.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && now.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          document.getElementById("user-age").textContent = `Возраст: ${age} лет`;
+        }
+
+        document.getElementById("user-city").textContent = user.city ? `Город: ${user.city}` : '';
+        document.getElementById("user-zodiac").textContent = user.zodiac_sign ? `Знак зодиака: ${user.zodiac_sign}` : '';
+        document.getElementById("user-bio").textContent = user.bio || '—';
+        document.getElementById("user-photo").src = user.photo || "profile_photo.jpg";
+
+      } catch (err) {
+        console.error(err);
+        alert("Ошибка при загрузке данных пользователя.");
+      }
+    }
+
+    document.getElementById("sendMessageBtn").addEventListener("click", async () => {
+      const messageText = prompt("Введите сообщение для пользователя:");
+      if (!messageText) return;
+
+      try {
+        const res = await fetch(`/api/user?email=${email}`);
+        if (!res.ok) {
+          alert("Не удалось получить данные текущего пользователя.");
+          return;
+        }
+        const currentUser = await res.json();
+
+        await fetch('/api/sendMessage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            senderId: currentUser.id,
+            receiverId: viewedUser.id,
+            message: messageText
+          })
+        });
+
+        alert('Сообщение отправлено!');
+        window.location.href = 'messages.html';
+      } catch (err) {
+        console.error("Ошибка при отправке сообщения:", err);
+        alert("Не удалось отправить сообщение.");
+      }
+    });
+
+    document.getElementById("likeBtn").addEventListener("click", async () => {
+      try {
+        const res = await fetch(`/api/user?email=${email}`);
+        if (!res.ok) {
+          alert("Не удалось получить данные текущего пользователя.");
+          return;
+        }
+        const currentUser = await res.json();
+
+        await fetch('/api/like', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            likerId: currentUser.id,
+            likedId: viewedUser.id
+          })
+        });
+
+        alert('Вы понравились этому пользователю!');
+      } catch (err) {
+        console.error("Ошибка при отправке лайка:", err);
+        alert("Не удалось отправить лайк.");
+      }
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

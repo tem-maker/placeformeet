@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Регистрация | Dream Date</title>
+ <link rel="stylesheet" href="log.css">
+</head>
+<body>
+<div class="container">
+  <a href="homepage.html" class="btn-home">Вернуться на главную страницу</a>
+  <h2>Создайте аккаунт</h2>
+  <form action="/register" method="POST">
+    <label for="name">Введите Ваше имя</label>
+    <input type="text" id="name" name="name" placeholder="Имя" required>
+
+    <label for="birthdate">Дата рождения</label>
+    <div class="date-input">
+      <input type="text" id="day" name="day" placeholder="День" required>
+      <input type="text" id="month" name="month" placeholder="Месяц" required>
+      <input type="text" id="year" name="year" placeholder="Год" required>
+    </div>
+
+    <label for="email">Электронная почта</label>
+    <input type="email" id="email" name="email" placeholder="Email" required>
+
+    <label for="password">Пароль</label>
+    <input type="password" id="password" name="password" placeholder="Пароль" required>
+
+    <button type="submit">Создать аккаунт</button>
+  </form>
+  <p>Уже есть аккаунт? <a href="login.html" class="btn-link">Войти</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+/* Общий стиль для контейнера */
+.container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+  color: #333;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Левая шторка */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  background-color: #f8d4ca;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  flex: 0 0 250px; /* Фиксированная ширина sidebar */
+position: relative; /* Остается внутри flex-контейнера */
+}
+
+.site-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #5c3d2e;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-profile {
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: #8a4b43; 
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.user-profile .profile-photo img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #e8b6a6;
+}
+
+.user-profile .profile-info h3 {
+  font-size: 18px;
+  color: #fff;
+}
+
+.user-profile .profile-info p {
+  font-size: 14px;
+  color: #fff;
+}
+
+.profile-info .btn {
+  margin-top: 10px;
+  padding: 5px 15px;
+  background-color: #d17c71;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #5c3d2e;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #5c3d2e;
+  font-size: 16px;
+  display: block;
+  transition: color 0.3s;
+}
+
+.sidebar ul li a:hover {
+  color: #b86457;
+}
+
+/* Специальный стиль для кнопки "Найти пару!" */
+.find-partner-btn {
+  background-color: #d17c71;
+  color: #fff;
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.find-partner-btn:hover {
+  background-color: #BC8F8F
+}
+
+
+
+/* Основной контент */
+.content {
+  margin-left: 10px;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+/* Заголовок на странице сообщений */
+.messages h2 {
+  font-size: 28px;
+  color: #34495e;
+  margin-bottom: 20px;
+}
+
+/* Карточки сообщений */
+.message-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+.message-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.message-photo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.message-info h3 {
+  font-size: 18px;
+  color: #2c3e50;
+  margin: 0 0 5px;
+}
+
+.message-info p {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* Класс для отправленных сообщений */
+.sent-message {
+  background-color: #dcf8c6;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  align-self: flex-end;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+
+/* Класс для полученных сообщений */
+.received-message {
+  background-color: #f1f0f0;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  align-self: flex-start;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+
+/* Кнопка отправки */
+#sendMessageBtn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#sendMessageBtn:hover {
+  background-color: #45a049;
+}

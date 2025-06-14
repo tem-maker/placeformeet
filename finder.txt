@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профили пользователей | Dream Date</title>
+  <link rel="stylesheet" href="finder.css">
+</head>
+<body>
+  <div class="container-logged-in">
+    <!-- Левая шторка -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img id="sidebar-photo" src="profile_photo.jpg" alt="Фото профиля">
+        </div>
+        <div class="profile-info">
+          <h3 id="sidebar-name">Имя Фамилия</h3>
+          <p id="sidebar-bio">Люблю смотреть фильмы, читаю книги.</p>
+          <a href="profile.html" class="btn">Профиль</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="messages.html">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки</a></li>
+        <li><a href="login.html" id="logout-link">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content">
+      <h2>Профили пользователей</h2>
+      <div class="profiles" id="profiles-container">
+        <!-- Сюда подгрузятся профили -->
+      </div>
+
+      <!-- Пагинация -->
+      <div class="pagination">
+        <a href="#" class="prev" id="prev-page">&laquo; Назад</a>
+        <span id="page-number">1</span>
+        <a href="#" class="next" id="next-page">Вперед &raquo;</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Проверка данных в localStorage
+  const userEmail = localStorage.getItem('email');  // предполагаем, что email сохранён после логина
+  const userId = localStorage.getItem('id'); // предполагаем, что userId сохранён после логина
+  const pageSize = 16; // количество пользователей на странице
+  let currentPage = 1; // текущая страница
+
+  // Логирование данных пользователя
+  console.log('User Email:', userEmail);
+  console.log('User ID:', userId);
+
+  // Проверка, что пользователь авторизован
+  if (!userEmail || !userId) {
+    alert('Ошибка: пользователь не авторизован.');
+    window.location.href = 'login.html';  // перенаправление на страницу логина
+  }
+
+  // Загрузка текущего пользователя в левую панель
+  fetch(`/api/user?email=${encodeURIComponent(userEmail)}`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error('Ошибка при загрузке данных пользователя');
+      }
+      return res.json();
+    })
+    .then(user => {
+      document.getElementById('sidebar-name').textContent = user.name;
+      document.getElementById('sidebar-bio').textContent = user.bio || 'Нет информации';
+      document.getElementById('sidebar-photo').src = user.photo || 'profile_photo.jpg';  // дефолтное фото
+    })
+    .catch(err => {
+      console.error('Ошибка при загрузке данных пользователя:', err);
+    });
+
+  // Загрузка пользователей с пагинацией
+  function loadUsers(page) {
+    fetch(`/api/users?page=${page}&size=${pageSize}&currentUserId=${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('profiles-container');
+        container.innerHTML = ''; // очистить, если есть
+
+        // Если пользователей нет
+        if (data.users.length === 0) {
+          container.innerHTML = '<p>Нет пользователей для отображения.</p>';
+          return;
+        }
+
+        data.users.forEach(user => {
+          const card = document.createElement('div');
+          card.className = 'profile-card';
+          card.innerHTML = `
+            <div class="profile-photo">
+              <img src="${user.photo || 'profile_photo.jpg'}" alt="Фото профиля">  <!-- дефолтное фото -->
+            </div>
+            <div class="profile-info">
+              <h3>${user.name}</h3>
+              <p>Возраст: ${user.age || 'Не указан'}</p>
+              <p>${user.bio || 'Нет информации'}</p>
+              <a href="profile.html?email=${encodeURIComponent(user.email)}" class="btn">Профиль</a>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        // Обновление страницы пагинации
+        document.getElementById('page-number').textContent = currentPage;
+      })
+      .catch(err => {
+        console.error('Ошибка при загрузке пользователей:', err);
+      });
+  }
+
+  // Обработчики пагинации
+  document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      loadUsers(currentPage);
+    }
+  });
+
+  document.getElementById('next-page').addEventListener('click', () => {
+    currentPage++;
+    loadUsers(currentPage);
+  });
+
+  // Загружаем пользователей при старте
+  loadUsers(currentPage);
+
+  // Обработчик выхода
+  document.getElementById('logout-link').addEventListener('click', () => {
+    // Удаляем данные о пользователе из localStorage
+    localStorage.removeItem('userId');
+    localStorage.removeItem('email');
+
+    // Перенаправляем на страницу входа
+    window.location.href = 'login.html';
+  });
+  </script>
+
+</body>
+</html>

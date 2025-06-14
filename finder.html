@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профили пользователей | Dream Date</title>
+  <link rel="stylesheet" href="finder.css">
+</head>
+<body>
+  <div class="container-logged-in">
+    <!-- Левая шторка -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img id="sidebar-photo" src="profile_photo.jpg" alt="Фото профиля">
+        </div>
+        <div class="profile-info">
+          <h3 id="sidebar-name">Кирилл</h3>
+          <p id="sidebar-bio">поставьте пять молю</p>
+          <a href="profile.html" class="btn">Профиль</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="messages.html">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки</a></li>
+        <li><a href="login.html" id="logout-link">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content">
+      <h2>Профили пользователей</h2>
+      <div class="profiles" id="profiles-container">
+        <!-- Сюда подгрузятся профили -->
+      </div>
+    </div>
+  </div>
+  <script>
+  const email = localStorage.getItem('userEmail');
+
+  if (email) {
+    // Загружаем текущий профиль для сайдбара
+    fetch(`/api/user?email=${email}`)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('sidebar-name').textContent = data.name;
+        document.getElementById('sidebar-bio').textContent = data.bio;
+        document.getElementById('sidebar-photo').src = data.photo || 'profile_photo.jpg';
+      })
+      .catch(error => {
+        console.error('Ошибка при загрузке данных пользователя:', error);
+        alert('Ошибка при загрузке данных профиля');
+      });
+
+    // Загружаем пользователей, исключая текущего
+    fetch(`/api/users?exclude=${encodeURIComponent(email)}`)
+      .then(response => response.json())
+      .then(users => {
+        const profilesContainer = document.getElementById('profiles-container');
+
+        users.forEach(user => {
+          const profileCard = document.createElement('div');
+          profileCard.classList.add('profile-card');
+          profileCard.innerHTML = `
+            <div class="profile-photo">
+              <img src="${user.photo || 'profile_photo.jpg'}" alt="Фото профиля">
+            </div>
+            <div class="profile-info">
+              <h3>${user.name}</h3>
+              <p>${user.bio || ''}</p>
+              <a href="user_profile.html?id=${user.id}" class="btn">Посмотреть профиль</a>
+            </div>
+          `;
+          profilesContainer.appendChild(profileCard);
+        });
+      })
+      .catch(error => {
+        console.error('Ошибка при загрузке списка пользователей:', error);
+        alert('Ошибка при загрузке профилей пользователей');
+      });
+  } else {
+    alert('Пользователь не авторизован');
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>

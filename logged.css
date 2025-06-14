@@ -1,0 +1,150 @@
+/* Стили для страницы logged_in_homepage */
+
+body {
+  font-family: 'Arial', sans-serif;
+}
+
+/* Основной контейнер */
+.container-logged-in {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Левая шторка */
+.sidebar {
+  width: 250px;
+  background-color: #f8d4ca;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+ flex: 0 0 250px; /* Фиксированная ширина sidebar */
+position: relative; /* Остается внутри flex-контейнера */
+}
+
+.site-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #5c3d2e;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-profile {
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: #8a4b43; 
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.user-profile .profile-photo img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #e8b6a6;
+}
+
+.user-profile .profile-info h3 {
+  font-size: 18px;
+  color: #fff;
+}
+
+.user-profile .profile-info p {
+  font-size: 14px;
+  color: #fff;
+}
+
+.profile-info .btn {
+  margin-top: 10px;
+  padding: 5px 15px;
+  background-color: #d17c71;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #5c3d2e;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #5c3d2e;
+  font-size: 16px;
+  display: block;
+  transition: color 0.3s;
+}
+
+.sidebar ul li a:hover {
+  color: #b86457;
+}
+
+/* Специальный стиль для кнопки "Найти пару!" */
+.find-partner-btn {
+  background-color: #d17c71;
+  color: #fff;
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.find-partner-btn:hover {
+  background-color: #BC8F8F
+}
+
+/* Центральный контент */
+.content {
+  flex-grow: 1;
+  background-color: #f4efec;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  flex: 1; /* Занимает оставшееся пространство */
+}
+
+.welcome-text {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 36px;
+  font-weight: bold;
+  color: #d17c71;
+  opacity: 0;
+  animation: welcomeAnimation 3s ease-out forwards;
+}
+
+@keyframes welcomeAnimation {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}

@@ -1,0 +1,156 @@
+const express = require('express');
+const sql = require('mssql');
+const bcrypt = require('bcryptjs');
+const path = require('path');
+
+const app = express();
+const port = 3000;
+
+// Конфигурация подключения к SQL Server
+const config = {
+  user: 'sa',
+  password: '1234qwer',
+  server: 'localhost',
+  port: 1433,
+  database: 'dreamdate',
+  options: {
+    encrypt: false,
+    trustServerCertificate: true
+  }
+};
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname))); // для HTML, CSS, изображений и т.д.
+
+// Статические страницы
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'homepage.html')));
+app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
+app.get('/registration.html', (req, res) => res.sendFile(path.join(__dirname, 'registration.html')));
+app.get('/profile.html', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
+app.get('/logged_in_homepage.html', (req, res) => res.sendFile(path.join(__dirname, 'logged_in_homepage.html')));
+
+// Роут: Регистрация
+app.post('/register', async (req, res) => {
+  const { name, email, password, day, month, year } = req.body;
+  const birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    await sql.connect(config);
+    await sql.query`
+      INSERT INTO users (name, birthdate, email, password)
+      VALUES (${name}, ${birthdate}, ${email}, ${hashedPassword})
+    `;
+    console.log('Новый пользователь зарегистрирован:', name);
+    res.redirect('/login.html');
+  } catch (err) {
+    console.error('Ошибка при регистрации:', err);
+    res.status(500).send('Ошибка сервера при регистрации');
+  }
+});
+
+// Роут: Вход
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    await sql.connect(config);
+    const result = await sql.query`SELECT * FROM users WHERE email = ${email}`;
+    const user = result.recordset[0];
+
+    if (!user || !await bcrypt.compare(password, user.password)) {
+      return res.status(401).send('Неверный логин или пароль');
+    }
+
+    console.log('Пользователь вошел:', user.name);
+    res.redirect('/logged_in_homepage.html');
+  } catch (err) {
+    console.error('Ошибка при входе:', err);
+    res.status(500).send('Ошибка сервера при входе');
+  }
+});
+
+// API: Получение данных профиля
+app.get('/api/profile', async (req, res) => {
+  const email = req.query.email;
+
+  if (!email) return res.status(400).send('Email обязателен');
+
+  try {
+    await sql.connect(config);
+    const result = await sql.query`SELECT * FROM users WHERE email = ${email}`;
+    const user = result.recordset[0];
+
+    if (!user) return res.status(404).send('Пользователь не найден');
+
+    res.json({
+      name: user.name,
+      birthdate: user.birthdate,
+      city: user.city || 'Не указано',
+      bio: user.bio || 'Нет информации',
+      zodiac_sign: user.zodiac_sign || 'Не указан',
+      photo: user.photo || 'profile_photo.jpg'
+    });
+  } catch (err) {
+    console.error('Ошибка при загрузке профиля:', err);
+    res.status(500).send('Ошибка сервера');
+  }
+});
+
+// Новый API: Получение текущего пользователя по email (для logged_in_homepage)
+app.get('/api/user', async (req, res) => {
+  const email = req.query.email;
+
+  if (!email) return res.status(400).send('Email обязателен');
+
+  try {
+    await sql.connect(config);
+    const result = await sql.query`SELECT * FROM users WHERE email = ${email}`;
+    const user = result.recordset[0];
+
+    if (!user) return res.status(404).send('Пользователь не найден');
+
+    res.json({
+      name: user.name,
+      bio: user.bio || 'Нет информации',
+      photo: user.photo || 'profile_photo.jpg',
+      zodiac_sign: user.zodiac_sign || 'Не указан',
+      city: user.city || 'Не указано',
+      age: user.age || 'Не указан'
+    });
+  } catch (err) {
+    console.error('Ошибка при загрузке данных пользователя:', err);
+    res.status(500).send('Ошибка сервера');
+  }
+});
+
+// Роут: Обновление профиля
+app.post('/api/updateProfile', async (req, res) => {
+  const { email, name, zodiac_sign, city, bio } = req.body;
+
+  if (!email) return res.status(400).send('Email обязателен');
+
+  try {
+    await sql.connect(config);
+
+    // Обновление данных пользователя
+    const result = await sql.query`
+      UPDATE users
+      SET name = ${name}, zodiac_sign = ${zodiac_sign}, city = ${city}, bio = ${bio}
+      WHERE email = ${email}
+    `;
+
+    console.log(`Профиль обновлен для пользователя: ${email}`);
+    res.status(200).send('Профиль обновлен');
+  } catch (err) {
+    console.error('Ошибка при обновлении профиля:', err);
+    res.status(500).send('Ошибка сервера');
+  }
+});
+
+// Запуск сервера
+app.listen(port, () => {
+  console.log(`Сервер запущен: http://localhost:${port}`);
+});

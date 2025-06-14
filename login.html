@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Войти | Dream Date</title>
+  <link rel="stylesheet" href="log.css" />
+</head>
+<body>
+  <div class="container">
+    <a href="homepage.html" class="btn-home">Вернуться на главную страницу</a>
+    <h2>Войти в аккаунт</h2>
+
+    <form id="loginForm">
+      <label for="email">Электронная почта</label>
+      <input type="email" id="email" name="email" placeholder="Email" required />
+
+      <label for="password">Пароль</label>
+      <input type="password" id="password" name="password" placeholder="Пароль" required />
+
+      <button type="submit">Войти</button>
+    </form>
+
+    <p>Нет аккаунта? <a href="registration.html" class="btn-link">Зарегистрируйтесь</a></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Отправляем запрос на сервер для авторизации
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          // Если вход успешен, получаем данные пользователя
+          const userData = await response.json();
+
+          // Сохраняем данные о пользователе в localStorage
+          localStorage.setItem('userEmail', email); // Сохраняем email
+          localStorage.setItem('userId', userData.id); // Сохраняем userId
+
+          // Переход на страницу после успешного входа
+          window.location.href = 'logged_in_homepage.html';
+        } else if (response.status === 401) {
+          alert('Неверный логин или пароль');
+        } else {
+          alert('Ошибка сервера. Попробуйте позже.');
+        }
+      } catch (error) {
+        alert('Ошибка подключения к серверу');
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>

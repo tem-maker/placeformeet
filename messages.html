@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Мои сообщения | Dream Date</title>
+  <link rel="stylesheet" href="messages.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Левая шторка -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img id="profilePhoto" src="profile_photo.jpg" alt="Фото профиля" />
+        </div>
+        <div class="profile-info">
+          <h3 id="userName">Имя Фамилия</h3>
+          <p id="userBio">Био пользователя</p>
+          <a href="profile.html" class="btn">Профиль</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="finder.html" id="find-partner-link" class="find-partner-btn">Найти пару!</a></li>
+        <li><a href="messages.html" class="active">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки</a></li>
+        <li><a href="login.html">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content">
+      <div class="messages">
+        <h2>Мои сообщения</h2>
+        <div id="messagesContainer">
+          <p>Загрузка сообщений...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const email = localStorage.getItem('userEmail');
+
+  if (!email) {
+    alert('Пользователь не авторизован');
+    window.location.href = 'login.html';
+  }
+
+  // Загрузка информации о текущем пользователе
+  fetch(`/api/user?email=${email}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('userName').textContent = data.name;
+      document.getElementById('userBio').textContent = data.bio;
+      document.getElementById('profilePhoto').src = data.photo;
+    });
+
+  // Загрузка списка диалогов
+  fetch(`/api/messages?email=${email}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById('messagesContainer');
+      container.innerHTML = '';
+
+      if (data.length === 0) {
+        container.innerHTML = `<p>Вы ещё не начали общение с другими пользователями.</p>`;
+        return;
+      }
+
+      data.forEach(msg => {
+        const card = document.createElement('div');
+        card.className = 'message-card';
+        card.addEventListener('click', () => openChat(msg.partner_id));
+
+        card.innerHTML = `
+          <div class="message-photo">
+            <img src="${msg.partner_photo || 'default.jpg'}" alt="Фото профиля" />
+          </div>
+          <div class="message-info">
+            <h3>${msg.partner_name}</h3>
+            <p>${msg.last_message}</p>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      console.error('Ошибка при загрузке сообщений:', err);
+      document.getElementById('messagesContainer').innerHTML = '<p>Ошибка загрузки сообщений</p>';
+    });
+
+  // Открытие страницы чата с партнёром
+  function openChat(partnerId) {
+    window.location.href = `chat.html?partnerId=${partnerId}`;
+  }
+</script>
+</body>
+</html>

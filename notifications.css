@@ -1,0 +1,154 @@
+/* Общий стиль для контейнера */
+.container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+  color: #333;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Левая шторка */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  background-color: #f8d4ca;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  flex: 0 0 250px; /* Фиксированная ширина sidebar */
+position: relative; /* Остается внутри flex-контейнера */
+}
+
+.site-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #5c3d2e;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-profile {
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: #8a4b43; 
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.user-profile .profile-photo img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #e8b6a6;
+}
+
+.user-profile .profile-info h3 {
+  font-size: 18px;
+  color: #fff;
+}
+
+.user-profile .profile-info p {
+  font-size: 14px;
+  color: #fff;
+}
+
+.profile-info .btn {
+  margin-top: 10px;
+  padding: 5px 15px;
+  background-color: #d17c71;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #5c3d2e;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #5c3d2e;
+  font-size: 16px;
+  display: block;
+  transition: color 0.3s;
+}
+
+.sidebar ul li a:hover {
+  color: #b86457;
+}
+
+/* Специальный стиль для кнопки "Найти пару!" */
+.find-partner-btn {
+  background-color: #d17c71;
+  color: #fff;
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.find-partner-btn:hover {
+  background-color: #BC8F8F
+}
+
+/* Основной контент */
+.content {
+  margin-left: 10px;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+/* Заголовок */
+.content h2 {
+  font-size: 24px;
+  color: #34495e;
+  margin-bottom: 20px;
+}
+
+/* Уведомления */
+.notifications {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.notification-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.notification-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.notification-card strong {
+  color: #27ae60; /* Яркий акцент */
+}
+
+.notification-card:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Чат | Dream Date</title>
+  <link rel="stylesheet" href="messages.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Левая шторка -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img id="profilePhoto" src="profile_photo.jpg" alt="Фото профиля" />
+        </div>
+        <div class="profile-info">
+          <h3 id="userName">Имя Фамилия</h3>
+          <p id="userBio">Био пользователя</p>
+          <a href="profile.html" class="btn">Профиль</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="finder.html">Найти пару!</a></li>
+        <li><a href="messages.html">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки</a></li>
+        <li><a href="login.html">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content">
+      <div class="chat">
+        <div id="chatHeader">
+          <div id="partnerPhoto">
+            <img src="profile_photo.jpg" alt="Фото собеседника" />
+          </div>
+          <div id="partnerInfo">
+            <h3 id="partnerName">Имя собеседника</h3>
+          </div>
+        </div>
+
+        <!-- История сообщений -->
+        <div id="messagesContainer">
+          <p>Загрузка сообщений...</p>
+        </div>
+
+        <!-- Поле ввода сообщения -->
+        <div id="messageInputContainer">
+          <textarea id="messageInput" placeholder="Введите сообщение..."></textarea>
+          <button id="sendMessageBtn">Отправить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const email = localStorage.getItem('userEmail');
+    const partnerId = new URLSearchParams(window.location.search).get('partnerId');
+
+    if (!email || !partnerId) {
+      alert('Ошибка: Пользователь не авторизован или собеседник не выбран');
+      window.location.href = 'login.html';
+    }
+
+    let currentUserId = null;
+
+    // Загрузка информации о текущем пользователе
+    fetch(`/api/user?email=${email}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('userName').textContent = data.name;
+        document.getElementById('userBio').textContent = data.bio;
+        document.getElementById('profilePhoto').src = data.photo;
+        currentUserId = data.id; // сохраняем ID пользователя
+      });
+
+    // Загрузка информации о собеседнике
+    fetch(`/api/users/${partnerId}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('partnerName').textContent = data.name;
+        document.getElementById('partnerPhoto').querySelector('img').src = data.photo || 'profile_photo.jpg';
+      });
+
+    // Загрузка сообщений
+    function loadMessages() {
+      fetch(`/api/messages?email=${email}`)
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('messagesContainer');
+          container.innerHTML = '';
+
+          const relevantMessages = data.filter(msg => msg.partner_id == partnerId);
+          if (relevantMessages.length === 0) {
+            container.innerHTML = '<p>Нет сообщений</p>';
+            return;
+          }
+
+          relevantMessages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = msg.sender_id == currentUserId ? 'sent-message' : 'received-message';
+            messageDiv.innerHTML = `
+              <div class="message-info">
+                <p>${msg.last_message}</p>
+                <small>${new Date(msg.timestamp).toLocaleTimeString()}</small>
+              </div>
+            `;
+            container.appendChild(messageDiv);
+          });
+        })
+        .catch(err => {
+          console.error('Ошибка при загрузке сообщений:', err);
+          document.getElementById('messagesContainer').innerHTML = '<p>Ошибка загрузки сообщений</p>';
+        });
+    }
+
+    loadMessages();
+
+    // Отправка сообщения
+    document.getElementById('sendMessageBtn').addEventListener('click', () => {
+      const messageText = document.getElementById('messageInput').value.trim();
+      if (!messageText || !currentUserId) {
+        alert('Введите сообщение');
+        return;
+      }
+
+      fetch('/api/sendMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderId: currentUserId,
+          receiverId: partnerId,
+          message: messageText
+        })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Ошибка при отправке');
+        document.getElementById('messageInput').value = '';
+        loadMessages(); // Перезагрузить сообщения
+      })
+      .catch(err => {
+        console.error('Ошибка при отправке сообщения:', err);
+        alert('Не удалось отправить сообщение');
+      });
+    });
+  </script>
+</body>
+</html>

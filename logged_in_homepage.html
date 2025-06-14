@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dream Date</title>
+  <link rel="stylesheet" href="logged.css">
+</head>
+<body>
+  <div class="container-logged-in">
+    <!-- Левая шторка -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img id="profilePhoto" src="profile_photo.jpg" alt="Фото профиля">
+        </div>
+        <div class="profile-info">
+          <h3 id="userName">Имя Фамилия</h3>
+          <p id="userBio">Люблю смотреть фильмы, читаю книги.</p>
+          <a href="profile.html" class="btn">Профиль</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="finder.html" id="find-partner-link" class="find-partner-btn">Найти пару!</a></li>
+        <li><a href="messages.html" id="messages-link">Мои сообщения</a></li>
+        <li><a href="notifications.html" id="notifications-link">Мои уведомления</a></li>
+        <li><a href="settings.html" id="settings-link">Настройки</a></li>
+        <li><a href="login.html" id="support-link">Выход</a></li>   
+      </ul>
+    </div>
+
+    <!-- Центральная часть (контент) -->
+    <div class="content" id="content-area">
+      <!-- Анимация текста -->
+      <div class="welcome-text">
+        <p>Добро пожаловать на Dream Date!</p>
+      </div>
+      <div id="placeholder"></div>
+    </div>
+  </div>
+
+  <script>
+    // Получаем email текущего пользователя (из localStorage или другого источника)
+    const email = localStorage.getItem('userEmail');
+    
+    // Если email есть, делаем запрос на сервер для получения информации
+    if (email) {
+      fetch(`/api/user?email=${email}`)
+        .then(response => response.json())
+        .then(data => {
+          // Заполняем поля на странице данными пользователя
+          document.getElementById('userName').textContent = data.name;
+          document.getElementById('userBio').textContent = data.bio;
+          document.getElementById('profilePhoto').src = data.photo;  // Обновление фото профиля
+        })
+        .catch(error => {
+          console.error('Ошибка при загрузке данных пользователя:', error);
+          alert('Ошибка при загрузке данных профиля');
+        });
+    } else {
+      alert('Пользователь не авторизован');
+      window.location.href = 'login.html'; // Перенаправляем на страницу входа
+    }
+  </script>
+</body>
+</html>

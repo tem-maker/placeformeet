@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Профиль | Dream Date</title>
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Левая панель -->
+    <div class="sidebar">
+      <div class="site-title">Dream Date</div>
+      <div class="user-profile">
+        <div class="profile-photo">
+          <img id="sidebar-photo" src="profile_photo.jpg" alt="Фото профиля" />
+        </div>
+        <div class="profile-info">
+          <h3 id="sidebar-name">Имя</h3>
+        </div>
+      </div>
+      <ul>
+        <li><a href="finder.html" class="find-partner-btn">Найти пару!</a></li>
+        <li><a href="messages.html">Мои сообщения</a></li>
+        <li><a href="notifications.html">Мои уведомления</a></li>
+        <li><a href="settings.html">Настройки сайта</a></li>
+        <li><a href="login.html">Выход</a></li>
+      </ul>
+    </div>
+
+    <!-- Контент -->
+    <div class="content">
+      <div class="profile-container">
+        <!-- Кнопка для редактирования -->
+        <button class="edit-btn" id="editBtn">Редактировать</button>
+        
+        <!-- Форма редактирования -->
+        <div id="editForm" style="display: none;">
+          <h3>Редактировать профиль</h3>
+          <form id="editProfileForm">
+            <label for="editName">Имя:</label>
+            <input type="text" id="editName" required>
+
+            <label for="editZodiac">Знак зодиака:</label>
+            <input type="text" id="editZodiac">
+
+            <label for="editCity">Город:</label>
+            <input type="text" id="editCity">
+
+            <label for="editBio">О себе:</label>
+            <textarea id="editBio"></textarea>
+
+            <button type="submit">Сохранить</button>
+          </form>
+        </div>
+
+        <!-- Отображение профиля -->
+        <div class="profile-image">
+          <img id="main-photo" src="profile_photo.jpg" alt="Фото профиля" />
+        </div>
+
+        <h2 id="profile-name">Имя</h2>
+        <p id="profile-age">Возраст: —</p>
+        <p id="profile-zodiac">Знак зодиака: —</p>
+        <p id="profile-city">Город: —</p>
+
+        <div class="about-block">
+          <h3>О себе</h3>
+          <p id="profile-bio">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Получаем email из localStorage
+const email = localStorage.getItem("userEmail");
+
+if (!email) {
+  alert("Сначала войдите в аккаунт.");
+  window.location.href = "login.html";
+} else {
+  fetch(`/api/user?email=${encodeURIComponent(email)}`)
+  .then(res => res.json())
+  .then(user => {
+    document.getElementById("sidebar-name").textContent = user.name;
+    document.getElementById("profile-name").textContent = user.name;
+
+    // Проверка и расчет возраста
+    const birthDate = user.birthdate ? new Date(user.birthdate) : null;
+
+    // Проверим, что дата корректно распарсена
+    console.log('Дата рождения:', user.birthdate);
+    console.log('Объект Date:', birthDate);
+
+    if (!birthDate || isNaN(birthDate.getTime())) {  // Если дата некорректна
+      document.getElementById("profile-age").textContent = 'Возраст: Не указан';
+    } else {
+      // Расчет возраста
+      let age = new Date().getFullYear() - birthDate.getFullYear();
+      const monthDiff = new Date().getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && new Date().getDate() < birthDate.getDate())) {
+        age--;  // Учитываем месяц и день рождения
+      }
+      document.getElementById("profile-age").textContent = `Возраст: ${age} лет`;
+    }
+
+    // Остальные данные
+    document.getElementById("profile-city").textContent = user.city ? `Город: ${user.city}` : '';
+    document.getElementById("profile-zodiac").textContent = `Знак зодиака: ${user.zodiac_sign || 'Не указан'}`;
+    document.getElementById("profile-bio").textContent = user.bio || 'Нет информации';
+
+    // Фото
+    document.getElementById("main-photo").src = user.photo || "profile_photo.jpg";
+    document.getElementById("sidebar-photo").src = user.photo || "profile_photo.jpg";
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Ошибка загрузки профиля.");
+  });
+
+}
+
+
+
+    // Включение формы редактирования
+    document.getElementById("editBtn").addEventListener("click", () => {
+      const editForm = document.getElementById("editForm");
+      editForm.style.display = editForm.style.display === "none" ? "block" : "none";
+
+      // Заполнение формы текущими данными пользователя
+      const name = document.getElementById("profile-name").textContent;
+      const zodiac = document.getElementById("profile-zodiac").textContent.split(": ")[1];
+      const city = document.getElementById("profile-city").textContent.split(": ")[1];
+      const bio = document.getElementById("profile-bio").textContent;
+
+      document.getElementById("editName").value = name;
+      document.getElementById("editZodiac").value = zodiac || '';
+      document.getElementById("editCity").value = city || '';
+      document.getElementById("editBio").value = bio || '';
+    });
+
+    // Сохранение изменений
+    document.getElementById("editProfileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("editName").value;
+      const zodiac = document.getElementById("editZodiac").value;
+      const city = document.getElementById("editCity").value;
+      const bio = document.getElementById("editBio").value;
+
+      const email = localStorage.getItem("userEmail"); // Получаем email из localStorage
+
+      try {
+        const response = await fetch(`/api/updateProfile`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            name,
+            zodiac_sign: zodiac,
+            city,
+            bio
+          })
+        });
+
+        if (response.ok) {
+          alert("Профиль обновлен!");
+          window.location.reload(); // Перезагружаем страницу, чтобы увидеть изменения
+        } else {
+          alert("Ошибка обновления профиля.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Ошибка при отправке данных.");
+      }
+    });
+  </script>
+</body>
+</html>

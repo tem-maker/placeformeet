@@ -1,0 +1,211 @@
+/* Общие стили */
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9; /* Светлый фон */
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.container-logged-in {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Левая шторка */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  background-color: #f8d4ca;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  flex: 0 0 250px; /* Фиксированная ширина sidebar */
+position: relative; /* Остается внутри flex-контейнера */
+}
+
+.site-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #5c3d2e;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-profile {
+  text-align: center;
+  margin-bottom: 30px;
+  background-color: #8a4b43; 
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.user-profile .profile-photo img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #e8b6a6;
+}
+
+.user-profile .profile-info h3 {
+  font-size: 18px;
+  color: #fff;
+}
+
+.user-profile .profile-info p {
+  font-size: 14px;
+  color: #fff;
+}
+
+.profile-info .btn {
+  margin-top: 10px;
+  padding: 5px 15px;
+  background-color: #d17c71;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #5c3d2e;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #5c3d2e;
+  font-size: 16px;
+  display: block;
+  transition: color 0.3s;
+}
+
+.sidebar ul li a:hover {
+  color: #b86457;
+}
+
+
+
+/* Основной контент */
+.content {
+    flex: 1;
+    padding: 30px;
+    background-color: #fff; /* Белый фон */
+}
+
+.content h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+/* Сетка для профилей пользователей */
+.profiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Карточка профиля */
+.profile-card {
+    background-color: #f0f1f5; /* Нежный оттенок sidebar */
+    border: 1px solid #d6d6dc;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Фото профиля */
+.profile-photo img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #8b8c96; /* Серо-бежевый цвет */
+    margin-bottom: 10px;
+}
+
+/* Информация профиля */
+.profile-info h3 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.profile-info p {
+    font-size: 0.95em;
+    margin: 5px 0;
+    color: #555;
+}
+
+.profile-info .btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 12px;
+    background-color: #d17c71; /* Серо-бежевый фон кнопки */
+    color: #fff;
+    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background 0.3s ease;
+}
+
+.profile-info .btn:hover {
+    background-color: #5c3d2e; /* Более тёмный оттенок серо-бежевого */
+}
+
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 1px solid #d6d6dc;
+    color: #64656e; /* Серо-бежевый цвет текста */
+    border-radius: 5px;
+    font-size: 0.95em;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #8b8c96;
+    color: #fff;
+}
+
+.pagination a.prev, 
+.pagination a.next {
+    font-weight: bold;
+}

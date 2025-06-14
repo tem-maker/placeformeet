@@ -1,0 +1,117 @@
+/* Стили для контейнера формы */
+.container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Стили для ссылок */
+a {
+  text-decoration: none;
+  color: #d17c71;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Кнопка "Вернуться на главную" */
+.btn-home {
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  background-color: #d17c71;
+  color: #fff;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btn-home:hover {
+  background-color: #bb645b;
+}
+
+/* Стили для формы */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+  color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Стили для кнопки отправки */
+button[type="submit"] {
+  background-color: #d17c71;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #bb645b;
+}
+
+/* Блок с датой рождения для регистрации */
+.date-input {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.date-input input {
+  width: 32%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+p {
+  font-size: 14px;
+  color: #777;
+  margin-top: 10px;
+}
+
+.btn-link {
+  color: #d17c71;
+  font-weight: bold;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
